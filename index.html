@@ -78,7 +78,7 @@
         letter-spacing: 0.5px;
         color: #333333;
         text-align: center;
-        line-height: 1.5;
+        line-height: 1.8;
         max-width: 85%;
         margin: 0 auto;
         background: transparent;
@@ -90,6 +90,26 @@
         box-shadow: none !important;
     }
 
+    .link-group {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px 18px;
+        margin-top: 4px;
+    }
+
+    .link-group a {
+        color: #333333;
+        text-decoration: underline;
+        font-family: 'Tiny5', monospace;
+        font-size: inherit;
+        letter-spacing: 0.5px;
+        transition: color 0.2s ease;
+    }
+
+    .link-group a:hover {
+        color: #000000;
+    }
 
     @media (max-width: 600px) {
         .center-image {
@@ -146,9 +166,11 @@
     Restudio Script Editor public version was discontinued on June 19, 2026.<br><br>
     An <strong>Institutional Version</strong> is available for approved users only.<br>
     To request access, contact Restudio Support.<br><br>
-    <a href="mailto:restudiosupport@gmail.com" style="color: #333; text-decoration: underline;">
-        Request Institutional Access🖤
-    </a>
+    
+    <div class="link-group">
+        <a href="mailto:restudiosupport@gmail.com">Request Institutional Access🖤</a>
+        <a href="https://restudiosoftwarelaboratories.github.io/Roland-End-Of-Life/" target="_blank">End Of Life</a>
+    </div>
 </div>
 
 </body>
