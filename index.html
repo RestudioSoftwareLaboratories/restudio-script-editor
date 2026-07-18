@@ -1,683 +1,155 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- CSP آمن ومبسط -->
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; img-src * data: blob:; font-src * data:;">
-    <title>Restudio · Script Editor</title>
-    <link href="https://fonts.cdnfonts.com/css/tiny5" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0,1" />
-    <link rel="icon" href="https://i.postimg.cc/66MLbbg8/restudio-profile.png" type="image/png">
+<meta charset="UTF-8">
+<title>Restudio Not Found 404</title>
+<link rel="icon" type="image/png" href="https://i.postimg.cc/JzYGnt17/restudio-profile.png">
 
-    <!-- math.js للتعبيرات الرياضية الآمنة -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
-    
-    <style>
-        * { box-sizing: border-box; }
-        body { font-family: 'Consolas', monospace; margin: 0; padding: 0; background: #1e1e1e; color: #f5f5f5; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        header { background: #000; padding: 8px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #333; }
-        .header-left { display: flex; align-items: center; gap: 10px; }
-        .logo { height: 30px; }
-        .header-left span { font-family: 'Tiny5', sans-serif; color: #fff; font-size: 20px; }
-        .header-buttons { display: flex; gap: 10px; }
-        .btn { background: none; border: none; cursor: pointer; padding: 5px; width: 40px; height: 40px; border-radius: 4px; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-        .btn:hover { background: #333; }
-        .btn svg { width: 24px; height: 24px; fill: #fff; }
-        .btn .play-btn { fill: #2eb346; }
+<link href="https://fonts.googleapis.com/css2?family=Tiny5&display=swap" rel="stylesheet">
 
-        .main-content { display: flex; flex: 1; overflow: hidden; }
-        #editor-container { flex: 2; border-right: 1px solid #333; }
-        .console-panel { flex: 1; background: #1a1a1a; display: flex; flex-direction: column; }
-        .console-header { background: #2d2d2d; padding: 10px; font-family: 'Tiny5', sans-serif; }
-        .console-output { flex: 1; padding: 10px; font-size: 14px; overflow-y: auto; background: #121212; }
-        .log-entry { margin-bottom: 4px; padding-left: 8px; font-family: 'Consolas', monospace; border-left: 2px solid transparent; display: flex; align-items: flex-start; gap: 6px; }
-        .log-icon { font-family: 'Material Symbols Outlined'; font-size: 18px; line-height: 1.4; user-select: none; }
-        .log-info { color: #569CD6; border-left-color: #569CD6; }
-        .log-success { color: #6A9955; border-left-color: #6A9955; }
-        .log-error { color: #F44747; border-left-color: #5470; }
-        .log-warning { color: #ff9800; border-left-color: #ff9800; }
-        .log-input { color: #9cdcfe; border-left-color: #9cdcfe; }
-        .timestamp { color: #666; margin-right: 8px; }
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        .dropdown-menu { position: absolute; top: 55px; right: 15px; background: #2d2d2d; border: 4px solid #444; display: none; z-index: 1000; min-width: 200px; }
-        .dropdown-menu.show { display: block; }
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .navbar {
+        background-color: #000;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        padding: 0 15px;
+        flex-shrink: 0;
+    }
+
+
+    .logo {
+        height: 40px;
+        width: auto;
+        object-fit: contain;
+    }
+
+
+    .main-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: #ffffff;
+        gap: 24px;
+    }
+
+
+    .center-image {
+        max-width: 90%;
+        max-height: 55vh;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        display: block;
         
-        .share-menu { position: absolute; top: 55px; right: 70px; background: #2d2d2d; border: 4px solid #444; display: none; z-index: 1000; min-width: 180px; }
-        .share-menu.show { display: block; }
-        
-        .dropdown-item { padding: 10px 20px; color: #fff; cursor: pointer; font-family: 'Tiny5', sans-serif; display: flex; align-items: center; gap: 10px; }
-        .dropdown-item:hover { background: #3d3d3d; }
-        .dropdown-item svg { width: 20px; height: 20px; fill: #fff; }
 
-        /* رسالة pixel style */
-        .pixel-toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2d2d2d;
-            border: 4px solid #6A9955;
-            padding: 12px 24px;
-            z-index: 9999;
-            box-shadow: 6px 6px 0px #000;
-            font-family: 'tiny5', cursive;
-            font-size: 30px;
-            color: #6A9955;
-            text-align: center;
-            animation: pixelFade 2s ease-in-out;
-            pointer-events: none;
-            white-space: nowrap;
+        border: none !important;
+        outline: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+    }
+
+
+    .tiny-text {
+        font-family: 'Tiny5', monospace;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+        color: #333333;
+        text-align: center;
+        line-height: 1.5;
+        max-width: 85%;
+        margin: 0 auto;
+        background: transparent;
+        border: none;
+        padding: 0;
+
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+
+    @media (max-width: 600px) {
+        .center-image {
+            max-width: 95%;
+            max-height: 50vh;
         }
-
-        @keyframes pixelFade {
-            0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
-            15% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            85% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+        .navbar {
+            padding: 0 12px;
         }
-
-        #splash {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 460px;
-            background: #2a2a2a;
-            border: 1px solid #000;
-            border-radius: 6px;
-            overflow: hidden;
-            z-index: 2000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .logo {
+            height: 34px;
         }
-
-        #banner {
-            background: #000;
-            height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 10px;
-            border-bottom: 1px solid #111;
+        .tiny-text {
+            font-size: 10px;
+            max-width: 90%;
         }
+        .main-container {
+            gap: 18px;
+            padding: 15px;
+        }
+    }
 
-        #banner img { height: 22px; }
-        #close { font-size: 14px; color: #777; cursor: pointer; user-select: none; }
-        #close:hover { color: #fff; }
-        #content { padding: 16px; }
-        .title { font-size: 16px; font-weight: 600; margin-bottom: 6px; color: #fff; }
-        .text { font-size: 13px; opacity: 0.85; margin-bottom: 12px; }
-        .notice { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #ff9f43; margin-bottom: 14px; }
-        .notice .material-symbols-outlined { font-size: 16px; line-height: 1; }
-        .buttons { display: flex; gap: 10px; }
-        .splash-btn { padding: 6px 14px; background: #3a3a3a; border: 1px solid #444; color: #eee; border-radius: 4px; cursor: pointer; }
-        .splash-btn:hover { background: #4a4a4a; }
-    </style>
+
+    @media (min-width: 768px) {
+        .tiny-text {
+            font-size: 20px;
+        }
+    }
+
+
+    .main-container,
+    .main-container * {
+        border: none;
+        outline: none;
+        box-shadow: none;
+    }
+</style>
 </head>
 <body>
-<!-- Splash Window -->
-<div id="splash">
-    <div id="banner">
-        <img src="https://i.postimg.cc/cLqbP43T/swrh-restudio.png" alt="Restudio">
-        <div id="close" onclick="closeSplash()">✕</div>
-    </div>
-    <div id="content">
-        <div class="title">Restudio Script Editor</div>
-        <div class="text">A simple editor for Roland Script</div>
-        <div class="notice">
-            <span class="material-symbols-outlined">warning</span>
-            The editor may contain errors in the programming language's compiler.
-        </div>
-        <div class="buttons">
-            <button class="splash-btn" onclick="closeSplash()">Start</button>
-        </div>
-    </div>
+
+
+<div class="navbar">
+    <img src="https://i.postimg.cc/B65yV9Bw/swrh-restudio.png" class="logo" alt="Restudio logo">
 </div>
 
-<header>
-    <div class="header-left">
-        <img src="https://i.postimg.cc/yYCszSyc/swrh-restudio.png" alt="Logo" class="logo">
-        <span>Script Editor</span>
-    </div>
-    <div class="header-buttons">
-        <button class="btn" onclick="runScript()"><svg class="play-btn" viewBox="0 0 24 24"><polygon points="22 11 22 13 21 13 21 14 20 14 20 15 18 15 18 16 16 16 16 17 15 17 15 18 13 18 13 19 11 19 11 20 10 20 10 21 8 21 8 22 6 22 6 23 3 23 3 22 2 22 2 2 3 2 3 1 6 1 6 2 8 2 8 3 10 3 10 4 11 4 11 5 13 5 13 6 15 6 15 7 16 7 16 8 18 8 18 9 20 9 20 10 21 10 21 11 22 11"/></svg></button>
-        <button class="btn" onclick="clearConsole()"><svg viewBox="0 0 24 24"><polygon points="22 3 22 5 2 5 2 3 8 3 8 2 9 2 9 1 15 1 15 2 16 2 16 3 22 3"/><path d="m4,7v15h1v1h14v-2h1V7H4Zm12,12h-2v-10h2v10Zm-6,0h-2v-10h2v10Z"/></svg></button>
-        <button class="btn" onclick="loadExample()"><svg viewBox="0 0 24 24"><polygon points="14 10 13 10 13 8 14 8 14 7 15 7 15 6 16 6 16 5 15 5 15 4 14 4 14 3 13 3 13 1 14 1 14 2 15 2 15 3 16 3 16 4 17 4 17 5 18 5 18 6 17 6 17 7 16 7 16 8 15 8 15 9 14 9 14 10"/><polygon points="2 6 1 6 1 5 2 5 2 4 3 4 3 3 4 3 4 2 5 2 5 1 6 1 6 3 5 3 5 4 4 4 4 5 3 5 3 6 4 6 4 7 5 7 5 8 6 8 6 10 5 10 5 9 4 9 4 8 3 8 3 7 2 7 2 6"/><polygon points="8 10 7 10 7 8 8 8 8 6 9 6 9 4 10 4 10 2 11 2 11 1 12 1 12 3 11 3 11 5 10 5 10 7 9 7 9 9 8 9 8 10"/><polygon points="23 5 23 22 22 22 22 23 2 23 2 22 1 22 1 9 2 9 2 10 3 10 3 21 21 21 21 6 19 6 19 4 22 4 22 5 23 5"/></svg></button>
-        <button class="btn" onclick="downloadCode()"><svg viewBox="0 0 24 24"><polygon points="5 10 4 10 4 8 6 8 6 9 7 9 7 10 8 10 8 11 9 11 9 12 10 12 10 13 11 13 11 1 13 1 13 13 14 13 14 12 15 12 15 11 16 11 16 10 17 10 17 9 18 9 18 8 20 8 20 10 19 10 19 11 18 11 18 12 17 12 17 13 16 13 16 14 15 14 15 15 14 15 14 16 13 16 13 17 11 17 11 16 10 16 10 15 9 15 9 14 8 14 8 13 7 13 7 12 6 12 6 11 5 11 5 10"/><rect x="2" y="21" width="20" height="2"/></svg></button>
-        <!-- زر المشاركة -->
-        <button class="btn" onclick="toggleShareMenu(event)">
-            <svg id="share" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="m20,9v-1h1v-2h1v-2h-1v-2h-1v-1h-5v1h-1v2h-1v2h-1v1h-1v1h-1v1h-1v-1h-5v1h-1v2h-1v2h1v2h1v1h5v-1h1v1h1v1h1v1h1v2h1v2h1v1h5v-1h1v-2h1v-2h-1v-2h-1v-1h-5v1h-2v-1h-1v-1h-1v-4h1v-1h1v-1h2v1h5Zm-11,4h-1v1h-3v-1h-1v-2h1v-1h3v1h1v2Zm6,5h1v-1h3v1h1v2h-1v1h-3v-1h-1v-2Zm0-14h1v-1h3v1h1v2h-1v1h-3v-1h-1v-2Z"/>
-            </svg>
-        </button>
-        <button class="btn" onclick="toggleSettingsMenu(event)"><svg viewBox="0 0 24 24"><path d="m14,18h-1v-1h-2v1h-1v1h-1v2h1v1h1v1h2v-1h1v-1h1v-2h-1v-1Zm-1,3h-2v-2h2v2Z"/><path d="m14,10h-1v-1h-2v1h-1v1h-1v2h1v1h1v1h2v-1h1v-1h1v-2h-1v-1Zm-1,3h-2v-2h2v2Z"/><path d="m14,3v-1h-1v-1h-2v1h-1v1h-1v2h1v1h1v1h2v-1h1v-1h1v-2h-1Zm-3,2v-2h2v2h-2Z"/></svg></button>
-    </div>
-    
-    <!-- قائمة المشاركة -->
-    <div class="share-menu" id="shareMenu">
-        <div class="dropdown-item" onclick="shareOnDiscord()">
-            <svg id="discord" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M22,11V8H21V6H20V5H18V4H15V5H9V4H6V5H4V6H3V8H2v3H1v7H3v1H5v1H7V18H6V17H8v1H9v1h6V18h1V17h2v1H17v2h2V19h2V18h2V11ZM9,15H7V14H6V12H7V11H9v1h1v2H9Zm9-1H17v1H15V14H14V12h1V11h2v1h1Z"/>
-            </svg>
-            Discord
-        </div>
-        <div class="dropdown-item" onclick="shareOnTwitter()">
-            <svg id="twitter" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <rect x="22" y="5" width="1" height="1"/><rect x="22" y="3" width="1" height="1"/>
-                <polygon points="21 5 21 6 22 6 22 7 21 7 21 12 20 12 20 14 19 14 19 16 18 16 18 17 17 17 17 18 16 18 16 19 14 19 14 20 11 20 11 21 4 21 4 20 2 20 2 19 1 19 1 18 3 18 3 19 6 19 6 18 7 18 7 17 5 17 5 16 4 16 4 15 3 15 3 14 5 14 5 13 3 13 3 12 2 12 2 10 4 10 4 9 3 9 3 8 2 8 2 4 3 4 3 5 4 5 4 6 5 6 5 7 7 7 7 8 10 8 10 9 12 9 12 5 13 5 13 4 14 4 14 3 19 3 19 4 22 4 22 5 21 5"/>
-            </svg>
-            Twitter / X
-        </div>
-    </div>
-    
-    <!-- قائمة الإعدادات -->
-    <div class="dropdown-menu" id="settingsMenu">
-        <div class="dropdown-item" onclick="downloadCode()">
-            <svg viewBox="0 0 24 24"><polygon points="5 10 4 10 4 8 6 8 6 9 7 9 7 10 8 10 8 11 9 11 9 12 10 12 10 13 11 13 11 1 13 1 13 13 14 13 14 12 15 12 15 11 16 11 16 10 17 10 17 9 18 9 18 8 20 8 20 10 19 10 19 11 18 11 18 12 17 12 17 13 16 13 16 14 15 14 15 15 14 15 14 16 13 16 13 17 11 17 11 16 10 16 10 15 9 15 9 14 8 14 8 13 7 13 7 12 6 12 6 11 5 11 5 10"/><rect x="2" y="21" width="20" height="2"/></svg>
-            Download (.roland)
-        </div>
-        <div class="dropdown-item" onclick="openDocs()">
-            <svg viewBox="0 0 24 24"><rect x="9" y="18" width="14" height="1"/><rect x="9" y="12" width="14" height="1"/><rect x="9" y="6" width="14" height="1"/><polygon points="7 15 8 15 8 17 7 17 7 18 6 18 6 19 5 19 5 20 4 20 4 21 3 21 3 20 2 20 2 19 1 19 1 17 2 17 2 18 3 18 3 19 4 19 4 18 5 18 5 17 6 17 6 16 7 16 7 15"/><polygon points="8 9 8 11 7 11 7 12 6 12 6 13 5 13 5 14 4 14 4 15 3 15 3 14 2 14 2 13 1 13 1 11 2 11 2 12 3 12 3 13 4 13 4 12 5 12 5 11 6 11 6 10 7 10 7 9 8 9"/><polygon points="8 3 8 5 7 5 7 6 6 6 6 7 5 7 5 8 4 8 4 9 3 9 3 8 2 8 2 7 1 7 1 5 2 5 2 6 3 6 3 7 4 7 4 6 5 6 5 5 6 5 6 4 7 4 7 3 8 3"/></svg>
-            Docs
-        </div>
-    </div>
-</header>
 
-<div class="main-content">
-    <div id="editor-container"></div>
-    <div class="console-panel">
-        <div class="console-header">ROLAND CONSOLE OUTPUT</div>
-        <div class="console-output" id="consoleOutput"></div>
-    </div>
+<div class="main-container">
+    <img src="https://i.postimg.cc/05FmBMbx/lqtt-shasht-2026-04-25-214004.png" 
+         alt="404" 
+         class="center-image">
+    
+
+<div class="tiny-text">
+    Restudio Script Editor public version was discontinued on June 19, 2026.<br><br>
+    An <strong>Institutional Version</strong> is available for approved users only.<br>
+    To request access, contact Restudio Support.<br><br>
+    <a href="mailto:restudiosupport@gmail.com" style="color: #333; text-decoration: underline;">
+        Request Institutional Access🖤
+    </a>
 </div>
 
-<!-- Monaco Editor -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
-<script>
-(function(){
-    "use strict";
-    
-    const SITE_URL = 'https://restudio-games.github.io/restudio-script-editor/';
-    
-    // دالة إظهار رسالة pixel
-    function showPixelToast(message) {
-        const toast = document.createElement('div');
-        toast.className = 'pixel-toast';
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.remove();
-        }, 2000);
-    }
-    
-    // دالة نسخ النص إلى الحافظة
-    async function copyToClipboard(text) {
-        try {
-            await navigator.clipboard.writeText(text);
-            addToConsole(` ${text}`, 'success');
-            showPixelToast('The text has been copied');
-        } catch (err) {
-            // Fallback للمتصفحات القديمة
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            addToConsole(` ${text}`, 'success');
-            showPixelToast('The text has been copied');
-        }
-    }
-    
-    // Global variables
-    let monacoEditor;
-    let scriptLines = [];
-    let currentLineIndex = 0;
-    let isRunning = false;
-    let variables = {};
-    let varTypes = {};
-    let lastLogMessage = '';
-    let calculatorEnabled = false;
-    
-    // Console functions
-    window.clearConsole = function() {
-        document.getElementById('consoleOutput').innerHTML = '';
-    };
-    
-    function addToConsole(msg, type = 'info') {
-        const out = document.getElementById('consoleOutput');
-        const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
-        const icon = type === 'success' ? 'check_circle' : type === 'error' ? 'error' : type === 'warning' ? 'warning' : type === 'input' ? 'input' : 'info';
-        const safeMsg = String(msg).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
-        out.innerHTML += `<div class="log-entry log-${type}"><span class="log-icon material-symbols-outlined">${icon}</span><span><span class="timestamp">[${timestamp}]</span> ${safeMsg}</span></div>`;
-        out.scrollTop = out.scrollHeight;
-    }
-    
-    function stopExecution() {
-        isRunning = false;
-        addToConsole('Execution stopped.', 'warning');
-    }
-    
-    function resetInterpreter() {
-        variables = {};
-        varTypes = {};
-        lastLogMessage = '';
-        calculatorEnabled = false;
-    }
-    
-    function validateType(varName, value) {
-        const type = varTypes[varName];
-        if (!type) return true;
-        if (type === 'Dnumber' && (isNaN(parseFloat(value)) || !isFinite(value) || value.toString().includes(' '))) {
-            addToConsole(`Type error: "${varName}" must be decimal.`, 'error'); return false;
-        }
-        if (type === 'var' && !/^-?\d+$/.test(value.toString())) {
-            addToConsole(`Type error: "${varName}" must be integer.`, 'error'); return false;
-        }
-        if (type === 'character' && value.length !== 1) {
-            addToConsole(`Type error: "${varName}" must be single character.`, 'error'); return false;
-        }
-        if (type === 'word' && /\s/.test(value)) {
-            addToConsole(`Type error: "${varName}" must not contain spaces.`, 'error'); return false;
-        }
-        if (type === 'TFvar' && value !== 'true' && value !== 'false') {
-            addToConsole(`Type error: "${varName}" must be true/false.`, 'error'); return false;
-        }
-        return true;
-    }
-    
-    window.openDocs = function() {
-        window.open('https://restudio-games.github.io/Restudio-Docs-For-Roland-Script/', '_blank');
-    };
-    
-    // دوال المشاركة - نسخ الرابط
-    window.shareOnDiscord = function() {
-        copyToClipboard(SITE_URL);
-        document.getElementById('shareMenu').classList.remove('show');
-    };
-    
-    window.shareOnTwitter = function() {
-        copyToClipboard(SITE_URL);
-        document.getElementById('shareMenu').classList.remove('show');
-    };
-    
-    // ================ دوال المصفوفات والحروف ================
-    
-    function parseArrayDefinition(content) {
-        let cleanContent = content.replace(/^\[|\]$/g, '').trim();
-        let items = cleanContent.split(/[,\n]+/).map(item => item.trim()).filter(item => item);
-        return items;
-    }
-    
-    function safeEvaluate(expression) {
-        try {
-            let evalExpr = expression;
-            Object.entries(variables).forEach(([key, value]) => {
-                if (value !== null && !isNaN(value) && isFinite(value)) {
-                    evalExpr = evalExpr.replace(new RegExp('\\b' + key + '\\b', 'g'), value);
-                }
-            });
-            const result = math.evaluate(evalExpr);
-            return result.toString();
-        } catch (e) {
-            return expression;
-        }
-    }
-    
-    async function executeLine(line) {
-        if (line.startsWith('bookname:')) return 'OK';
-        if (line === 'end!' || line === 'pass!') { 
-            addToConsole('Script terminated.', 'success'); 
-            return 'STOP'; 
-        }
-        
-        // line for class: - تعريف مصفوفة
-        if (line.startsWith('line for class:')) {
-            const arrayContent = line.substring('line for class:'.length).trim();
-            const arrayName = 'line_for_class';
-            const items = parseArrayDefinition(arrayContent);
-            variables[arrayName] = items;
-            varTypes[arrayName] = 'array';
-            addToConsole(`Array defined with ${items.length} items: [${items.join(', ')}]`, 'success');
-            return 'OK';
-        }
-        
-        // line for class = ("Arrays")
-        const arrayPrintMatch = line.match(/line for class\s*=\s*\("([^"]+)"\)/);
-        if (arrayPrintMatch) {
-            const arrayName = 'line_for_class';
-            if (variables[arrayName] && Array.isArray(variables[arrayName])) {
-                const title = arrayPrintMatch[1];
-                addToConsole(`${title}: [${variables[arrayName].join(', ')}]`, 'success');
-            } else {
-                addToConsole('No array defined yet.', 'warning');
-            }
-            return 'OK';
-        }
-        
-        // Cletters اسم_المتغير:("نص")
-        if (line.startsWith('Cletters ')) {
-            const clettersMatch = line.match(/^Cletters\s+(\w+):\("(.+)"\)$/);
-            if (clettersMatch) {
-                const varName = clettersMatch[1];
-                const text = clettersMatch[2];
-                const combined = text.replace(/\s+/g, '');
-                variables[varName] = combined;
-                varTypes[varName] = 'word';
-                addToConsole(`Cletters: "${varName}" = "${combined}"`, 'success');
-            } else {
-                addToConsole(`Invalid Cletters format. Use: Cletters varName:("t e x t")`, 'error');
-            }
-            return 'OK';
-        }
-        
-        // الأوامر الأساسية
-        const defMatch = line.match(/^(var|Dnumber|character|word|TFvar)\s*=\s*([^;]+);?$/);
-        if (defMatch) {
-            const [, type, varName] = defMatch;
-            variables[varName.trim()] = null;
-            varTypes[varName.trim()] = type;
-            addToConsole(`Defined: ${varName.trim()} (${type})`, 'info');
-            return 'OK';
-        }
-        
-        const assignMatch = line.match(/^(\w+)\s*=\s*(.+);?$/);
-        if (assignMatch && assignMatch[1] !== 'reload!') {
-            const varName = assignMatch[1];
-            let value = assignMatch[2].trim().replace(/;$/, '');
-            if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-                value = value.slice(1, -1);
-            }
-            
-            if (varName.includes('[') && varName.includes(']')) {
-                const arrayMatch = varName.match(/^(\w+)\[(\d+)\]$/);
-                if (arrayMatch) {
-                    const arrName = arrayMatch[1];
-                    const index = parseInt(arrayMatch[2]);
-                    if (variables[arrName] && Array.isArray(variables[arrName])) {
-                        if (index >= 0 && index < variables[arrName].length) {
-                            variables[arrName][index] = value;
-                            addToConsole(`Array ${arrName}[${index}] = ${value}`, 'info');
-                        } else {
-                            addToConsole(`Array index out of bounds: ${index}`, 'error');
-                        }
-                    }
-                    return 'OK';
-                }
-            }
-            
-            if (!variables.hasOwnProperty(varName) && varName !== 'msg.out') { 
-                addToConsole(`Error: "${varName}" not defined.`, 'error'); 
-                return 'ERROR'; 
-            }
-            if (varTypes[varName] && !validateType(varName, value)) return 'ERROR';
-            variables[varName] = value;
-            addToConsole(`Assigned: ${varName} = ${value}`, 'info');
-            return 'OK';
-        }
-        
-        if (line.startsWith('get lib:')) {
-            const m = line.match(/get lib:\("(.+)"\)/);
-            if (m && m[1] === 'calculator') { 
-                calculatorEnabled = true; 
-                addToConsole('Calculator library loaded (using math.js).', 'success'); 
-            }
-            return 'OK';
-        }
-        
-        if (line.startsWith('msg.log:')) {
-            const m = line.match(/msg\.log:\("(.+)"\)/);
-            if (m) {
-                let content = m[1];
-                Object.entries(variables).forEach(([key, value]) => {
-                    if (value !== null) {
-                        if (Array.isArray(value)) {
-                            content = content.replace(new RegExp('\\b' + key + '\\b', 'g'), `[${value.join(', ')}]`);
-                        } else {
-                            content = content.replace(new RegExp('\\b' + key + '\\b', 'g'), value);
-                        }
-                    }
-                });
-                if (calculatorEnabled && /^[\d\s\+\-\*\/\(\)\.]+$/.test(content)) {
-                    content = safeEvaluate(content);
-                }
-                lastLogMessage = content;
-                addToConsole(content, 'success');
-            }
-            return 'OK';
-        }
-        
-        if (line.startsWith('reload! =')) {
-            const m = line.match(/reload!\s*=\s*\(?"?(\d+)"?\)?/);
-            if (m && lastLogMessage) {
-                const times = parseInt(m[1]);
-                for(let i = 0; i < times; i++) {
-                    addToConsole(`[${i+1}] ${lastLogMessage}`, 'info');
-                }
-            } else { 
-                addToConsole('No message to repeat.', 'warning'); 
-            }
-            return 'OK';
-        }
-        
-        if (line.startsWith('if var')) {
-            const m = line.match(/if var\s+(\w+)\s*=\s*\(?"?([^")]+)"?\)?/);
-            if (m) {
-                let expected = m[2].replace(/[";]/g, '').trim();
-                if ((expected.startsWith('"') && expected.endsWith('"')) || (expected.startsWith("'") && expected.endsWith("'"))) {
-                    expected = expected.slice(1, -1);
-                }
-                if (variables[m[1]] != expected) { 
-                    addToConsole(`Condition false, skipping next.`, 'error'); 
-                    currentLineIndex++; 
-                } else {
-                    addToConsole(`Condition true: ${m[1]} = ${variables[m[1]]}`, 'success');
-                }
-            }
-            return 'OK';
-        }
-        
-        if (line.startsWith('msg.out:')) {
-            const m = line.match(/msg\.out:\("(.+)"\)/);
-            if (m) {
-                const inp = prompt(m[1], '');
-                variables['msg.out'] = inp !== null ? inp : '';
-                addToConsole(`Input: ${variables['msg.out']}`, 'success');
-            }
-            return 'OK';
-        }
-        
-        if (line.startsWith('if typed')) {
-            const m = line.match(/if typed\s+(\d+)\s+in\s+(\w+)/);
-            if (m) {
-                const inp = prompt(`Enter value for ${m[2]} (expected ${m[1]}):`, '');
-                if (inp !== null) {
-                    variables[m[2]] = inp;
-                    if (inp != m[1]) { 
-                        addToConsole(`Incorrect, skipping next.`, 'error'); 
-                        currentLineIndex++; 
-                    } else {
-                        addToConsole(`Correct!`, 'success');
-                    }
-                }
-            }
-            return 'OK';
-        }
-        
-        if (line.startsWith('greet')) {
-            const m = line.match(/greet\s+(\w+):\("(.+)"\)/);
-            if (m) { 
-                variables[m[1]] = m[2]; 
-                addToConsole(`Hello ${m[2]}!`, 'success'); 
-            }
-            return 'OK';
-        }
-        
-        if (line) addToConsole(`Unknown: ${line}`, 'warning');
-        return 'OK';
-    }
-    
-    async function executeNextLine() {
-        while (isRunning && currentLineIndex < scriptLines.length) {
-            const result = await executeLine(scriptLines[currentLineIndex]);
-            if (result === 'STOP') { 
-                stopExecution(); 
-                return; 
-            }
-            currentLineIndex++;
-        }
-        if (isRunning) { 
-            addToConsole('Script finished.', 'success'); 
-            isRunning = false; 
-        }
-    }
-    
-    window.runScript = function() {
-        if (!monacoEditor) return;
-        if (isRunning) { 
-            addToConsole('Already running.', 'warning'); 
-            return; 
-        }
-        clearConsole();
-        resetInterpreter();
-        const code = monacoEditor.getValue();
-        scriptLines = code.split('\n').map(l => l.trim()).filter(l => l);
-        if (!scriptLines.length || scriptLines[0] !== 'hi roland.script!') {
-            addToConsole('Error: Must start with "hi roland.script!"', 'error'); 
-            return;
-        }
-        isRunning = true;
-        currentLineIndex = 1;
-        addToConsole('Starting execution...', 'info');
-        executeNextLine();
-    };
-    
-    window.loadExample = function() {
-        if (!monacoEditor) return;
-        monacoEditor.setValue(`hi roland.script!
-bookname:("Arrays & Cletters Example")
-
-line for class: 
-[عمار, علي, احمد,
-عمار, محمد, صالح,
-حمد, عزيز, خالد]
-
-line for class = ("Arrays")
-msg.log:("Arrays")
-
-Cletters myText:("h e l l o w o r l d !")
-msg.log:("myText")
-
-Cletters greeting:("م ر ح ب ا")
-msg.log:("greeting")
-
-get lib:("calculator")
-var = x;
-x = 10;
-msg.log:("x * 3 + 5")
-
-pass!`);
-    };
-    
-    window.downloadCode = function() {
-        if (!monacoEditor) return;
-        const blob = new Blob([monacoEditor.getValue()], {type:'text/plain'});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'script.roland';
-        a.click();
-        URL.revokeObjectURL(a.href);
-    };
-    
-    window.toggleSettingsMenu = function(e) {
-        e.stopPropagation();
-        document.getElementById('shareMenu').classList.remove('show');
-        document.getElementById('settingsMenu').classList.toggle('show');
-    };
-    
-    window.toggleShareMenu = function(e) {
-        e.stopPropagation();
-        document.getElementById('settingsMenu').classList.remove('show');
-        document.getElementById('shareMenu').classList.toggle('show');
-    };
-    
-    window.onclick = function(e) {
-        const settingsMenu = document.getElementById('settingsMenu');
-        const shareMenu = document.getElementById('shareMenu');
-        if (settingsMenu && settingsMenu.classList.contains('show') && !e.target.closest('.btn')) {
-            settingsMenu.classList.remove('show');
-        }
-        if (shareMenu && shareMenu.classList.contains('show') && !e.target.closest('.btn')) {
-            shareMenu.classList.remove('show');
-        }
-    };
-    
-    window.closeSplash = function() {
-        document.getElementById('splash')?.remove();
-    };
-    
-    // Initialize Monaco
-    require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
-    require(['vs/editor/editor.main'], function() {
-        monaco.languages.register({ id: 'roland' });
-        monaco.languages.setMonarchTokensProvider('roland', { 
-            tokenizer: { 
-                root: [
-                    [/hi roland\.script!/, "keyword-start"], 
-                    [/pass!|end!/, "keyword-stop"],
-                    [/var|Dnumber|character|word|TFvar/, "type"],
-                    [/if var|if typed|get lib:|reload!|greet|bookname:|line for class:|Cletters/, "function"],
-                    [/msg\.(log|out):/, "function"], 
-                    [/"([^"\\]|\\.)*"/, "string"],
-                    [/\b\d+(\.\d+)?\b/, "number"], 
-                    [/\b(true|false)\b/, "constant"], 
-                    [/[=;():]/, "delimiter"],
-                ] 
-            } 
-        });
-        monaco.editor.defineTheme('rolandTheme', {
-            base: 'vs-dark', 
-            inherit: true,
-            rules: [
-                { token: 'keyword-start', foreground: '569CD6', fontStyle: 'bold' },
-                { token: 'keyword-stop', foreground: 'F44747', fontStyle: 'bold' },
-                { token: 'type', foreground: '569CD6' }, 
-                { token: 'function', foreground: 'DCDCAA' },
-                { token: 'string', foreground: 'CE9178' }
-            ],
-            colors: { 'editor.background': '#1e1e1e' }
-        });
-        monacoEditor = monaco.editor.create(document.getElementById('editor-container'), {
-            value: `hi roland.script!
-bookname:("Arrays & Cletters Roland Script 2.0")
-
-line for class:[apple, IDE, message,]
-
-
-line for class = ("Arrays")
-msg.log:("Arrays")
-
-Cletters message:("h e l l o   w o r l d !")
-msg.log:("message")
-
-Cletters arabic:("م ر ح ب ا   ب ك")
-msg.log:("arabic")
-
-get lib:("calculator")
-var = num;
-num = 15;
-msg.log:("num * 2 + 10")
-
-pass!`,
-            language: 'roland', 
-            theme: 'rolandTheme', 
-            fontSize: 16, 
-            automaticLayout: true
-        });
-    });
-})();
-</script>
 </body>
 </html>
